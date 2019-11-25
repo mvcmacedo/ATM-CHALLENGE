@@ -3,6 +3,6 @@ package br.com.ibm.challenge.dto;
 import lombok.Getter;
 
 @Getter
-public class CreateAccount {
+public class AccountDTO {
     private String digits;
 }

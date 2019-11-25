@@ -1,6 +1,8 @@
 package br.com.ibm.challenge.controller;
 
-import br.com.ibm.challenge.dto.CreateAccount;
+import br.com.ibm.challenge.dto.AccountDTO;
+import br.com.ibm.challenge.dto.ConfirmationDTO;
+import br.com.ibm.challenge.dto.DepositDTO;
 import br.com.ibm.challenge.model.Account;
 import br.com.ibm.challenge.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<Account> createAccount(@RequestBody CreateAccount account) {
+    public ResponseEntity<Account> createAccount(@RequestBody AccountDTO account) {
         return ResponseEntity.ok(accountService.create(account));
     }
 
@@ -34,5 +36,34 @@ public class AccountController {
         } catch (NullPointerException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Account> updateAccount(
+        @PathVariable String id,
+        @RequestBody AccountDTO account) {
+        try {
+            return ResponseEntity.ok(accountService.update(id, account));
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteAccount(@PathVariable String id) {
+        try {
+            accountService.delete(id);
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Delete Account Failed", e);
+        }
+
+        return ResponseEntity.ok(id);
+    }
+
+    @PutMapping("/deposit/{id}")
+    public ResponseEntity<ConfirmationDTO> deposit(@PathVariable String id, @RequestBody DepositDTO deposit) {
+        return ResponseEntity.ok(accountService.deposit(id, deposit));
     }
 }

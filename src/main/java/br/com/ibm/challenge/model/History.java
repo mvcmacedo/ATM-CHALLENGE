@@ -29,7 +29,7 @@ public class History {
     private Double amount;
 
     @NonNull
-    private ObjectId account;
+    private String account;
 
     @Nullable
     private DepositType depositType;
