@@ -1,8 +1,7 @@
 package br.com.ibm.challenge.controller;
 
-import br.com.ibm.challenge.dto.AccountDTO;
-import br.com.ibm.challenge.dto.ConfirmationDTO;
-import br.com.ibm.challenge.dto.DepositDTO;
+import br.com.ibm.challenge.dto.*;
+import br.com.ibm.challenge.helper.MoneyBills;
 import br.com.ibm.challenge.model.Account;
 import br.com.ibm.challenge.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +63,19 @@ public class AccountController {
 
     @PutMapping("/deposit/{id}")
     public ResponseEntity<ConfirmationDTO> deposit(@PathVariable String id, @RequestBody DepositDTO deposit) {
-        return ResponseEntity.ok(accountService.deposit(id, deposit));
+        try {
+            return ResponseEntity.ok(accountService.deposit(id, deposit));
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
+        }
+    }
+
+    @PutMapping("/withdrawal/{id}")
+    public ResponseEntity<WithdrawalResponseDTO> withdrawal(@PathVariable String id, @RequestBody WithdrawalDTO withdrawal) {
+        try {
+            return ResponseEntity.ok(accountService.withdrawal(id, withdrawal));
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
+        }
     }
 }

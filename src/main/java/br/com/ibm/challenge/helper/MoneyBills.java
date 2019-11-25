@@ -1,7 +1,10 @@
 package br.com.ibm.challenge.helper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public enum MoneyBills {
-    CINCO_REAIS("cinco reais", 5),
     DEZ_REAIS("dez reais", 10),
     VINTE_REAIS("vinte reais", 20),
     CINQUENTA_REAIS("cinquenta reais", 50),
@@ -21,5 +24,24 @@ public enum MoneyBills {
 
     public int getValue() {
         return value;
+    }
+
+    public static List<MoneyBills> getBills(double amount) {
+        double count = 0;
+        final List<MoneyBills> bills = new ArrayList<>();
+
+        while (count != amount) {
+            int pick = new Random().nextInt(MoneyBills.values().length);
+            final MoneyBills bill = MoneyBills.values()[pick];
+
+            if (count + bill.value > amount) {
+                continue;
+            }
+
+            bills.add(bill);
+            count = count + bill.value;
+        }
+
+        return bills;
     }
 }

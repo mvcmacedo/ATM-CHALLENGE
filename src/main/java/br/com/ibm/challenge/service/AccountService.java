@@ -1,8 +1,7 @@
 package br.com.ibm.challenge.service;
 
-import br.com.ibm.challenge.dto.AccountDTO;
-import br.com.ibm.challenge.dto.ConfirmationDTO;
-import br.com.ibm.challenge.dto.DepositDTO;
+import br.com.ibm.challenge.dto.*;
+import br.com.ibm.challenge.helper.MoneyBills;
 import br.com.ibm.challenge.model.Account;
 import br.com.ibm.challenge.model.History;
 import br.com.ibm.challenge.repository.AccountRepository;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static br.com.ibm.challenge.helper.HistoryType.DEPOSIT;
+import static br.com.ibm.challenge.helper.HistoryType.WITHDRAWAL;
 
 @Service
 public class AccountService {
@@ -81,6 +81,35 @@ public class AccountService {
         return ConfirmationDTO.builder()
             .account(updatedAccount)
             .history(history)
+            .build();
+    }
+
+    public WithdrawalResponseDTO withdrawal(String id, WithdrawalDTO withdrawal) {
+        final Account account = Optional.ofNullable(accountRepository.findById(id))
+            .orElseThrow(NullPointerException::new);
+
+        if (account.getBalance() < withdrawal.getAmount()) {
+            throw new Error("Balance insufucient");
+        }
+
+        final Account updatedAccount = account.toBuilder()
+            .balance(account.getBalance() - withdrawal.getAmount())
+            .build();
+
+        accountRepository.save(updatedAccount);
+
+        final History history = History.builder()
+            .account(id)
+            .type(WITHDRAWAL)
+            .amount(withdrawal.getAmount())
+            .build();
+
+        historyService.create(history);
+
+        return WithdrawalResponseDTO.builder()
+            .history(history)
+            .balance(updatedAccount.getBalance())
+            .moneyBills(MoneyBills.getBills(withdrawal.getAmount()))
             .build();
     }
 }
