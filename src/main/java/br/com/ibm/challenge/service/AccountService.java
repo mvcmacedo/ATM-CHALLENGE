@@ -1,6 +1,7 @@
 package br.com.ibm.challenge.service;
 
 import br.com.ibm.challenge.dto.*;
+import br.com.ibm.challenge.helper.HistoryType;
 import br.com.ibm.challenge.helper.MoneyBills;
 import br.com.ibm.challenge.model.Account;
 import br.com.ibm.challenge.model.History;
@@ -12,8 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static br.com.ibm.challenge.helper.HistoryType.DEPOSIT;
-import static br.com.ibm.challenge.helper.HistoryType.WITHDRAWAL;
+import static br.com.ibm.challenge.helper.HistoryType.*;
 
 @Service
 public class AccountService {
@@ -38,6 +38,11 @@ public class AccountService {
 
     public Account get(final String id) {
         return Optional.ofNullable(accountRepository.findById(id))
+            .orElseThrow(NullPointerException::new);
+    }
+
+    public Account getByDigits(final String digits) {
+        return Optional.ofNullable(accountRepository.findByDigits(digits))
             .orElseThrow(NullPointerException::new);
     }
 
@@ -72,7 +77,7 @@ public class AccountService {
         final History history = History.builder()
             .account(id)
             .amount(deposit.getAmount())
-            .depositType(deposit.getType())
+            .deposit_type(deposit.getType())
             .type(DEPOSIT)
             .build();
 
@@ -109,7 +114,36 @@ public class AccountService {
         return WithdrawalResponseDTO.builder()
             .history(history)
             .balance(updatedAccount.getBalance())
-            .moneyBills(MoneyBills.getBills(withdrawal.getAmount()))
+            .money_bills(MoneyBills.getBills(withdrawal.getAmount()))
             .build();
+    }
+
+    public History transfer(String id, TransferDTO transferData) {
+        final Account originAccount = Optional.ofNullable(accountRepository.findById(id))
+            .orElseThrow(NullPointerException::new);
+
+        final Account destinationAccount = Optional.ofNullable(accountRepository
+            .findById(transferData.getDestination_account()))
+            .orElseThrow(NullPointerException::new);
+
+        if (originAccount.getBalance() < transferData.getAmount()) {
+            throw new Error("Balance insufucient");
+        }
+
+        accountRepository
+            .save(originAccount.toBuilder()
+            .balance(originAccount.getBalance() - transferData.getAmount())
+            .build());
+
+        accountRepository
+            .save(destinationAccount.toBuilder()
+            .balance(destinationAccount.getBalance() + transferData.getAmount())
+            .build());
+
+        historyService
+            .createTransferHistory(transferData.getDestination_account(), id, TRANSFER_RECEIVED, transferData.getAmount());
+
+        return historyService
+            .createTransferHistory(id, destinationAccount.getId(), TRANSFER_SENT, transferData.getAmount());
     }
 }

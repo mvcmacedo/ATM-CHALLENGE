@@ -1,5 +1,6 @@
 package br.com.ibm.challenge.service;
 
+import br.com.ibm.challenge.helper.HistoryType;
 import br.com.ibm.challenge.model.History;
 import br.com.ibm.challenge.repository.HistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,16 @@ public class HistoryService {
     public List<History> getByAccountId(String id) {
         return Optional.ofNullable(historyRepository.findByAccount(id))
             .orElse(Collections.emptyList());
+    }
+
+    History createTransferHistory(String origin, String destination, HistoryType type, Double amount) {
+        final History history = History.builder()
+            .type(type)
+            .amount(amount)
+            .account(origin)
+            .transfer_account(destination)
+            .build();
+
+        return this.create(history);
     }
 }

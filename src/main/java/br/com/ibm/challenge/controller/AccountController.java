@@ -1,8 +1,8 @@
 package br.com.ibm.challenge.controller;
 
 import br.com.ibm.challenge.dto.*;
-import br.com.ibm.challenge.helper.MoneyBills;
 import br.com.ibm.challenge.model.Account;
+import br.com.ibm.challenge.model.History;
 import br.com.ibm.challenge.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +32,15 @@ public class AccountController {
     public ResponseEntity<Account> getAccount(@PathVariable String id) {
         try {
             return ResponseEntity.ok(accountService.get(id));
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
+        }
+    }
+
+    @GetMapping("/digits/{digits}")
+    public ResponseEntity<Account> getAccountByDigits(@PathVariable String digits) {
+        try {
+            return ResponseEntity.ok(accountService.getByDigits(digits));
         } catch (NullPointerException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
         }
@@ -74,6 +83,15 @@ public class AccountController {
     public ResponseEntity<WithdrawalResponseDTO> withdrawal(@PathVariable String id, @RequestBody WithdrawalDTO withdrawal) {
         try {
             return ResponseEntity.ok(accountService.withdrawal(id, withdrawal));
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
+        }
+    }
+
+    @PutMapping("/transfer/{id}")
+    public ResponseEntity<History> transfer(@PathVariable String id, @RequestBody TransferDTO transferData) {
+        try {
+            return ResponseEntity.ok(accountService.transfer(id, transferData));
         } catch (NullPointerException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
         }

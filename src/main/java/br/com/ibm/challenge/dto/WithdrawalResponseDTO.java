@@ -12,5 +12,5 @@ import java.util.List;
 public class WithdrawalResponseDTO {
     private Double balance;
     private History history;
-    private List<MoneyBills> moneyBills;
+    private List<MoneyBills> money_bills;
 }

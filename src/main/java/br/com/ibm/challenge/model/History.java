@@ -32,7 +32,7 @@ public class History {
     private String account;
 
     @Nullable
-    private DepositType depositType;
+    private DepositType deposit_type;
 
     @Nullable
     private String transfer_account;
