@@ -6,7 +6,6 @@ import br.com.ibm.challenge.helper.HistoryType;
 import com.mongodb.lang.Nullable;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -17,12 +16,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "history")
 public class History {
     @Id
-    private ObjectId id;
+    private String id;
 
     @NonNull
     private HistoryType type;

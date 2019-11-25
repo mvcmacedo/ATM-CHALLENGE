@@ -1,32 +1,30 @@
 package br.com.ibm.challenge.model;
 
 import lombok.Getter;
+import lombok.Builder;
 import lombok.NonNull;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "account")
 public class Account {
     @Id
-    private ObjectId id;
+    private String id;
 
     @NonNull
-    private String number;
+    private String digits;
 
+    @Builder.Default
     private Double balance = 0d;
 
-    private Boolean active = false;
+    @Builder.Default
+    private Boolean active = true;
 
     @CreatedDate
     private LocalDateTime created_at;
