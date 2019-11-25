@@ -7,7 +7,9 @@ import br.com.ibm.challenge.model.Account;
 import br.com.ibm.challenge.model.History;
 import br.com.ibm.challenge.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +24,9 @@ public class AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private ATMService atmService;
 
     public Account create(final AccountDTO createAccount) {
         final Account account = Account.builder()
@@ -65,6 +70,10 @@ public class AccountService {
     }
 
     public ConfirmationDTO deposit(final String id, final DepositDTO deposit) {
+        if (atmService.isClosed()) {
+            throw new Error("ATM is closed");
+        }
+
         final Account account = Optional.ofNullable(accountRepository.findById(id))
             .orElseThrow(NullPointerException::new);
 
@@ -90,6 +99,10 @@ public class AccountService {
     }
 
     public WithdrawalResponseDTO withdrawal(String id, WithdrawalDTO withdrawal) {
+        if (atmService.isClosed()) {
+            throw new Error("ATM is closed");
+        }
+
         final Account account = Optional.ofNullable(accountRepository.findById(id))
             .orElseThrow(NullPointerException::new);
 
@@ -119,6 +132,10 @@ public class AccountService {
     }
 
     public History transfer(String id, TransferDTO transferData) {
+        if (atmService.isClosed()) {
+            throw new Error("ATM is closed");
+        }
+
         final Account originAccount = Optional.ofNullable(accountRepository.findById(id))
             .orElseThrow(NullPointerException::new);
 

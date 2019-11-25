@@ -15,7 +15,7 @@ public class HistoryService {
     @Autowired
     private HistoryRepository historyRepository;
 
-    public History create(History history) {
+    History create(History history) {
         return historyRepository.save(history);
     }
 
@@ -30,8 +30,12 @@ public class HistoryService {
     }
 
     public List<History> getByAccountId(String id) {
-        return Optional.ofNullable(historyRepository.findByAccount(id))
+        final List<History> history = Optional.ofNullable(historyRepository.findByAccount(id))
             .orElse(Collections.emptyList());
+
+        Collections.reverse(history);
+
+        return history;
     }
 
     History createTransferHistory(String origin, String destination, HistoryType type, Double amount) {
