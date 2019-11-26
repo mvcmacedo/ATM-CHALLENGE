@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static br.com.ibm.challenge.helper.HistoryType.*;
+import static java.lang.Boolean.FALSE;
 
 @Service
 public class AccountService {
@@ -66,6 +67,22 @@ public class AccountService {
         accountRepository.delete(foundAccount);
     }
 
+    public CloseReportDTO closeAccount(final String id) {
+        final Account account = Optional.ofNullable(accountRepository.findById(id))
+            .orElseThrow(NullPointerException::new);
+
+        final Account inactiveAccount = inactivateAccount(account);
+
+        final List<History> accountHistory = historyService.getByAccountId(id);
+
+        return CloseReportDTO.builder()
+            .account(inactiveAccount.getId())
+            .status(inactiveAccount.getActive())
+            .date(inactiveAccount.getUpdated_at())
+            .account_history(accountHistory)
+            .build();
+    }
+
     public ConfirmationDTO deposit(final String id, final DepositDTO deposit) {
         if (atmService.isClosed()) {
             throw new Error("ATM is closed");
@@ -94,6 +111,10 @@ public class AccountService {
     public WithdrawalResponseDTO withdrawal(String id, WithdrawalDTO withdrawal) {
         if (atmService.isClosed()) {
             throw new Error("ATM is closed");
+        }
+
+        if (withdrawal.getAmount() % 10 != 0) { // only accepts multiple of 10 (20, 40, 150, ...)
+            throw new Error("Invalid amount, try a value multiple of 10");
         }
 
         final Account account = Optional.ofNullable(accountRepository.findById(id))
@@ -147,7 +168,7 @@ public class AccountService {
             .createTransferHistory(id, destinationAccount.getId(), TRANSFER_SENT, transferData.getAmount());
     }
 
-    private Account addCash(Account account, double amount) {
+    private Account addCash(final Account account, double amount) {
         final Account updatedAccount = account.toBuilder()
             .balance(account.getBalance() + amount)
             .build();
@@ -155,9 +176,17 @@ public class AccountService {
         return accountRepository.save(updatedAccount);
     }
 
-    private Account removeCash(Account account, double amount) {
+    private Account removeCash(final Account account, double amount) {
         final Account updatedAccount = account.toBuilder()
             .balance(account.getBalance() - amount)
+            .build();
+
+        return accountRepository.save(updatedAccount);
+    }
+
+    private Account inactivateAccount(final Account account) {
+        final Account updatedAccount = account.toBuilder()
+            .active(FALSE)
             .build();
 
         return accountRepository.save(updatedAccount);

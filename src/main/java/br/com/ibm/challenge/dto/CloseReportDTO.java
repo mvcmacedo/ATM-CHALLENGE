@@ -7,11 +7,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConfirmationDTO {
-    private Account account;
-    private History history;
+public class CloseReportDTO {
+    private String account;
+    private Boolean status;
+    private LocalDateTime date;
+    private List<History> account_history;
 }

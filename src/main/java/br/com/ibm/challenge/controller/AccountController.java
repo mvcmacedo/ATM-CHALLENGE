@@ -70,6 +70,15 @@ public class AccountController {
         return ResponseEntity.ok(id);
     }
 
+    @DeleteMapping("/{id}/close")
+    public ResponseEntity<CloseReportDTO> closeAccount(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(accountService.closeAccount(id));
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found", e);
+        }
+    }
+
     @PutMapping("/deposit/{id}")
     public ResponseEntity<ConfirmationDTO> deposit(@PathVariable String id, @RequestBody DepositDTO deposit) {
         try {
