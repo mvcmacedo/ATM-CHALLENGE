@@ -5,6 +5,7 @@ import br.com.ibm.challenge.service.ATMService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,12 +18,12 @@ public class ATMController {
     @Autowired
     private ATMService atmService;
 
-    @GetMapping("/open")
+    @PutMapping("/open")
     public ResponseEntity<ATMStatusDTO> openATM() {
         return ResponseEntity.ok(atmService.setATM(FALSE));
     }
 
-    @GetMapping("/close")
+    @PutMapping("/close")
     public ResponseEntity<ATMStatusDTO> closeATM() {
         return ResponseEntity.ok(atmService.setATM(TRUE));
     }

@@ -77,17 +77,13 @@ public class AccountService {
         final Account account = Optional.ofNullable(accountRepository.findById(id))
             .orElseThrow(NullPointerException::new);
 
-        final Account updatedAccount = account.toBuilder()
-            .balance(account.getBalance() + deposit.getAmount())
-            .build();
-
-        accountRepository.save(updatedAccount);
+        final Account updatedAccount = addCash(account, deposit.getAmount());
 
         final History history = History.builder()
             .account(id)
+            .type(DEPOSIT)
             .amount(deposit.getAmount())
             .deposit_type(deposit.getType())
-            .type(DEPOSIT)
             .build();
 
         historyService.create(history);
@@ -107,14 +103,10 @@ public class AccountService {
             .orElseThrow(NullPointerException::new);
 
         if (account.getBalance() < withdrawal.getAmount()) {
-            throw new Error("Balance insufucient");
+            throw new Error("Insufficient funds");
         }
 
-        final Account updatedAccount = account.toBuilder()
-            .balance(account.getBalance() - withdrawal.getAmount())
-            .build();
-
-        accountRepository.save(updatedAccount);
+        final Account updatedAccount = removeCash(account, withdrawal.getAmount());
 
         final History history = History.builder()
             .account(id)
@@ -144,23 +136,33 @@ public class AccountService {
             .orElseThrow(NullPointerException::new);
 
         if (originAccount.getBalance() < transferData.getAmount()) {
-            throw new Error("Balance insufucient");
+            throw new Error("Insufficient funds");
         }
 
-        accountRepository
-            .save(originAccount.toBuilder()
-            .balance(originAccount.getBalance() - transferData.getAmount())
-            .build());
+        removeCash(originAccount, transferData.getAmount());
 
-        accountRepository
-            .save(destinationAccount.toBuilder()
-            .balance(destinationAccount.getBalance() + transferData.getAmount())
-            .build());
+        addCash(destinationAccount, transferData.getAmount());
 
         historyService
             .createTransferHistory(transferData.getDestination_account(), id, TRANSFER_RECEIVED, transferData.getAmount());
 
         return historyService
             .createTransferHistory(id, destinationAccount.getId(), TRANSFER_SENT, transferData.getAmount());
+    }
+
+    private Account addCash(Account account, double amount) {
+        final Account updatedAccount = account.toBuilder()
+            .balance(account.getBalance() + amount)
+            .build();
+
+        return accountRepository.save(updatedAccount);
+    }
+
+    private Account removeCash(Account account, double amount) {
+        final Account updatedAccount = account.toBuilder()
+            .balance(account.getBalance() - amount)
+            .build();
+
+        return accountRepository.save(updatedAccount);
     }
 }

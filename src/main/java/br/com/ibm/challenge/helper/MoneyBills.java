@@ -27,7 +27,7 @@ public enum MoneyBills {
     }
 
     public static List<MoneyBills> getBills(double amount) {
-        double count = 0;
+        int count = 0;
         final List<MoneyBills> bills = new ArrayList<>();
 
         while (count != amount) {
