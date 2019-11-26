@@ -1,3 +1,19 @@
+# INFORMAÇÕES DO DESENVOLVIMENTO
+API Rest desenvolvida com Spring Boot, MongoDB e Docker. Testes unitários com JUnit e Mockito.
+
+## Rodando a aplicação
+### Para rodar localmente
+ - Configure a sua uri do mongo local no arquivo application.properties
+ - Ex: spring.data.mongodb.uri=mongodb://localhost:27017/nome-do-seu-banco
+ - Rode a aplicação
+
+### Para rodar com Docker / docker-compose
+ - Configure a uri do mongo no arquivo application.properties da seguinte forma: `spring.data.mongodb.uri=mongodb://mongo:27017/atm-mongo`
+ - Crie a imagem da aplicação com o seguinte comando: `mvn clean package dockerfile:build`
+ - Rode o comando: `docker-compose up`
+ - Serão criados dois containers, um com o banco de dados, outro com a aplicação rodando na porta 8080
+
+
 # ATM-CHALLENGE
 Challenge for interviews
 
