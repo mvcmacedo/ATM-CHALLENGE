@@ -1,15 +1,12 @@
 package br.com.ibm.challenge.service;
 
 import br.com.ibm.challenge.dto.*;
-import br.com.ibm.challenge.helper.HistoryType;
 import br.com.ibm.challenge.helper.MoneyBills;
 import br.com.ibm.challenge.model.Account;
 import br.com.ibm.challenge.model.History;
 import br.com.ibm.challenge.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import java.util.Collections;
 import java.util.List;
